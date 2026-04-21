@@ -85,18 +85,34 @@ def test_BankTransfer_class():
 def test_proccesor_class():
     sender = Account('John Penny', 11111111, '40-47-84', 2500)
     receiver = Account('Jane Smith', 22222222, '20-30-40', 1000)
-    method = BankTransfer(500, '40-47-84', '31412032', 'Hello World')
     processor = Processor()
+
+    # Test bank transfer
+    method = BankTransfer(500, '40-47-84', '31412032', 'Hello World')
     processor.process_payment(sender, receiver, method)
     assert sender.balance == 2000
     assert receiver.balance == 1500
 
+    # Test insufficient funds
     method = BankTransfer(10000, '40-47-84', '31412032', 'Hello World')
     processor.process_payment(sender, receiver, method)
     assert sender.balance == 2000
     assert receiver.balance == 1500
 
+    # Test invalid bank transfer
     invalid_method = BankTransfer(500, 'bad-sort', '31412032', 'Hello World')
     processor.process_payment(sender, receiver, invalid_method)
     assert sender.balance == 2000
     assert receiver.balance == 1500
+
+    # Test card payment
+    card_method = CardPayment(200, '1234567890123456', '05/28', '123', '1234')
+    processor.process_payment(sender, receiver, card_method)
+    assert sender.balance == 1800
+    assert receiver.balance == 1700
+
+    # Test invalid card payment
+    invalid_card = CardPayment(200, '123', '05/28', '99', '111')
+    processor.process_payment(sender, receiver, invalid_card)
+    assert sender.balance == 1800
+    assert receiver.balance == 1700
