@@ -4,46 +4,49 @@ import os
 DB_PATH = 'payment_processor.db'
 SQL_DIR = 'database'
 
+conn = None
+
 def get_connection():
-    conn = sqlite3.connect(DB_PATH)
+    global conn
+    if conn is None:
+        conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+        conn.execute("PRAGMA journal_mode=WAL")
     return conn
 
 def read_sql(filename):
     with open(os.path.join(SQL_DIR, filename), 'r') as f:
         return f.read()
 
+def reset_db():
+    global conn
+    if conn:
+        conn.close()
+        conn = None
+    if os.path.exists(DB_PATH):
+        os.remove(DB_PATH)
+    initialise_db()
+
 def initialise_db():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.executescript(read_sql('schema.sql'))
-    conn.commit()
-    conn.close()
+    c = get_connection()
+    c.cursor().executescript(read_sql('schema.sql'))
+    c.commit()
 
 def insert_account(name, account_number, sort_code, balance):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(read_sql('insert_account.sql'), (name, account_number, sort_code, balance))
-    conn.commit()
-    conn.close()
+    c = get_connection()
+    c.cursor().execute(read_sql('insert_account.sql'), (name, account_number, sort_code, balance))
+    c.commit()
 
 def insert_transaction(sender_account_number, receiver_account_number, amount, payment_type):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(read_sql('insert_transaction.sql'), (sender_account_number, receiver_account_number, amount, payment_type))
-    conn.commit()
-    conn.close()
+    c = get_connection()
+    c.cursor().execute(read_sql('insert_transaction.sql'), (sender_account_number, receiver_account_number, amount, payment_type))
+    c.commit()
 
 def update_balance(balance, account_number):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(read_sql('update_balance.sql'), (balance, account_number))
-    conn.commit()
-    conn.close()
+    c = get_connection()
+    c.cursor().execute(read_sql('update_balance.sql'), (balance, account_number))
+    c.commit()
 
 def get_account(account_number):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(read_sql('get_account.sql'), (account_number,))
-    account = cursor.fetchone()
-    conn.close()
-    return account
+    c = get_connection()
+    row = c.cursor().execute(read_sql('get_account.sql'), (account_number,)).fetchone()
+    return row

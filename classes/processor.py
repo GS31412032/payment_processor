@@ -1,34 +1,23 @@
-from classes.accounts import Account
-from classes.payment_methods import PaymentMethod, CardPayment, BankTransfer
+from database.db import insert_transaction
 
 class Processor():
     def __init__(self):
         self.transaction_log = []
 
     def process_payment(self, sender, receiver, payment_method):
-
-        # Validate Payment Method
         if not payment_method.validate():
             print('Invalid payment details')
             return
 
-        # Validate Transaction
-        if sender.balance >= payment_method.amount:
-            sender.withdraw(payment_method.amount, receiver)
-            receiver.deposit(payment_method.amount, sender)
+        if sender.withdraw(payment_method.amount, receiver.name):
+            receiver.deposit(payment_method.amount, sender.name)
             self.transaction_log.append({
                 'sender': sender.name,
                 'receiver': receiver.name,
                 'amount': payment_method.amount,
                 'payment_type': type(payment_method).__name__
             })
-            print(f'Transaction Complete')
-
+            insert_transaction(sender.account_number, receiver.account_number, payment_method.amount, type(payment_method).__name__)
+            print('Transaction Complete')
         else:
-            print(f'Insufficient Funds')
-
-
-
-
-
-
+            print('Insufficient Funds')
