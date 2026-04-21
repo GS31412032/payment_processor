@@ -64,18 +64,26 @@ def test_cardmethod_class():
     assert payment.expiry_date == expiry
     assert payment.cvv == cvv
     assert payment.pin == pin
+    assert payment.validate() == True
+
+    false_payment = CardPayment(100, '123', '05/28', '99', '111')
+    assert false_payment.validate() == False
 
 def test_BankTransfer_class():
     random_amount = random.randint(0,100_000)
     sort_code = '-'.join([f"{random.randint(0, 99):02d}" for _ in range(3)])
-    card_number = ''.join([str(random.randint(0, 9)) for _ in range(8)])
+    account_number = ''.join([str(random.randint(0, 9)) for _ in range(8)])
     reference = 'Hello World'
 
-    payment = BankTransfer(random_amount, sort_code, card_number, reference)
+    payment = BankTransfer(random_amount, sort_code, account_number, reference)
     assert payment.amount == random_amount
     assert payment.sort_code == sort_code
-    assert payment.card_number == card_number
+    assert payment.account_number == account_number
     assert payment.reference == reference
+    assert payment.validate() == True
+
+    false_payment = BankTransfer('123', '05/28', '99', '111')
+    assert false_payment.validate() == False
 
     
 
