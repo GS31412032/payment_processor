@@ -1,0 +1,1 @@
+SELECT * FROM accounts WHERE account_number = ?;

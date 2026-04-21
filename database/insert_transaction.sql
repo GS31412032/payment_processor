@@ -1,0 +1,1 @@
+INSERT INTO transactions (sender_account_number, receiver_account_number, amount, payment_type) VALUES (?, ?, ?, ?);

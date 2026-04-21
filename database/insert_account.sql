@@ -1,0 +1,1 @@
+INSERT INTO accounts (name, account_number, sort_code, balance) VALUES (?, ?, ?, ?);
