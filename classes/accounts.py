@@ -8,21 +8,23 @@ class Account():
         self.balance = balance
         self.transactions = []
     
-    def deposit(self, deposit_amount):
+    def deposit(self, deposit_amount, sender=None):
         self.balance += deposit_amount
         transaction = {
                 'transaction_type': 'deposit',
-                'transaction_amount': deposit_amount
+                'transaction_amount': deposit_amount,
+                'sender': sender
             }
         self.transactions.append(transaction)
 
-    def withdraw(self, withdraw_amount):
+    def withdraw(self, withdraw_amount, receiver=None):
         overdraft_limit = -1000
         if self.balance - withdraw_amount > overdraft_limit:
             self.balance -= withdraw_amount
             transaction = {
-                'transaction_type': 'withdrawl',
-                'transaction_amount': withdraw_amount
+                'transaction_type': 'withdrawal',
+                'transaction_amount': withdraw_amount,
+                'receiver': receiver
             }
             self.transactions.append(transaction)
         else:
@@ -30,6 +32,7 @@ class Account():
 
     def check_balance(self):
         print(f'Your Current Balance: {self.balance}')
+        return self.balance
     
     def transaction_history(self):
         for transaction in self.transactions:

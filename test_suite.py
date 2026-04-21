@@ -3,6 +3,7 @@ import pytest
 import random
 from classes.accounts import Account
 from classes.payment_methods import PaymentMethod, CardPayment, BankTransfer
+from classes.processor import Processor
 
 # ACCOUNT CLASS TESTING
 @pytest.mark.parametrize("name, account_number, sort_code, balance", [
@@ -84,6 +85,30 @@ def test_BankTransfer_class():
 
     false_payment = BankTransfer('123', '05/28', '99', '111')
     assert false_payment.validate() == False
+
+
+
+# PROCCESSOR CLASS TESTING
+def test_proccesor_class():
+    sender = Account('John Penny', 31412032, '40-47-84', 2500)
+    reciever = Account('Jane Smith', 12345678, '20-30-40', 1000)
+    method = BankTransfer(500, '40-47-84', '31412032', 'Hello World')
+
+    processor = Processor()
+    processor.process_payment(sender, reciever, method)
+    
+    assert sender.balance == 2000
+    assert reciever.balance == 1500
+
+    method = BankTransfer(10000, '40-47-84', '31412032', 'Hello World')
+    processor.process_payment(sender, reciever, method)
+    assert sender.balance == 2000
+    assert reciever.balance == 1500
+
+    invalid_method = BankTransfer(500, 'bad-sort', '31412032', 'Hello World')
+    processor.process_payment(sender, reciever, invalid_method)
+    assert sender.balance == 2000
+    assert reciever.balance == 1500
 
     
 
