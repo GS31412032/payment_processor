@@ -1,5 +1,5 @@
 from database.db import insert_transaction
-
+# Define a processor class to process & log valid transactions
 class Processor():
     def __init__(self):
         self.transaction_log = []
