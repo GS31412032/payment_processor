@@ -1,5 +1,5 @@
 from database.db import insert_account, update_balance
-
+# Define an account class to hold relevant account details.
 class Account():
     def __init__(self, name, account_number, sort_code, balance):
         self.name = name
